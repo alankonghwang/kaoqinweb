@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考勤打卡系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #303133;
+        }
+
+        .time {
+            font-size: 24px;
+            color: #409EFF;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        button.primary {
+            background-color: #409EFF;
+            color: white;
+        }
+
+        button.warning {
+            background-color: #E6A23C;
+            color: white;
+        }
+
+        .records {
+            margin-top: 30px;
+        }
+
+        .records h3 {
+            margin-bottom: 15px;
+            color: #303133;
+        }
+
+        .record-list {
+            border-left: 2px solid #DCDFE6;
+            padding-left: 20px;
+            margin-left: 10px;
+        }
+
+        .record-item {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .record-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #409EFF;
+        }
+
+        .record-time {
+            color: #909399;
+            font-size: 14px;
+        }
+
+        .record-type {
+            margin-left: 10px;
+            color: #303133;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .message.success {
+            background-color: #67C23A;
+        }
+
+        .message.error {
+            background-color: #F56C6C;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+        <div class="header">
+            <span class="title">考勤打卡</span>
+            <div class="time" id="currentTime"></div>
+        </div>
+        
+        <div class="button-group">
+            <button class="primary" onclick="handleCheckIn()" id="checkInBtn">上班打卡</button>
+            <button class="warning" onclick="handleCheckOut()" id="checkOutBtn">下班打卡</button>
+        </div>
+
+        <div class="records">
+            <h3>今日打卡记录</h3>
+            <div class="record-list" id="recordList"></div>
+        </div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <script>
+        // 更新时间显示
+        function updateTime() {
+            const timeElement = document.getElementById('currentTime');
+            const now = new Date();
+            timeElement.textContent = now.toLocaleTimeString();
+        }
+
+        // 显示消息提示
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type}`;
+            message.style.opacity = 1;
+            
+            setTimeout(() => {
+                message.style.opacity = 0;
+            }, 3000);
+        }
+
+        // 添加打卡记录
+        function addRecord(type) {
+            const recordList = document.getElementById('recordList');
+            const now = new Date();
+            const record = document.createElement('div');
+            record.className = 'record-item';
+            record.innerHTML = `
+                <span class="record-time">${now.toLocaleString()}</span>
+                <span class="record-type">${type === 'in' ? '上班打卡' : '下班打卡'}</span>
+            `;
+            recordList.appendChild(record);
+        }
+
+        // 处理上班打卡
+        function handleCheckIn() {
+            const btn = document.getElementById('checkInBtn');
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                addRecord('in');
+                showMessage('上班打卡成功！', 'success');
+                btn.disabled = false;
+            }, 500);
+        }
+
+        // 处理下班打卡
+        function handleCheckOut() {
+            const btn = document.getElementById('checkOutBtn');
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                addRecord('out');
+                showMessage('下班打卡成功！', 'success');
+                btn.disabled = false;
+            }, 500);
+        }
+
+        // 初始化
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+  </body>
+</html> 
